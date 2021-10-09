@@ -1,20 +1,16 @@
-cmake_minimum_required(VERSION 2.8)
-project(PriorityQueue)
+cmake_minimum_required(VERSION 3.14)
+project(Archiver)
+
+add_executable(MAIN main.cpp)
 
 
-set(GTest_ROOT /usr/src/googletest/googletest)
-add_subdirectory(${GTest_ROOT}
-        "${CMAKE_CURRENT_BINARY_DIR}/googletest" EXCLUDE_FROM_ALL)
-enable_testing()
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIR})
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
-add_custom_target(. COMMAND GTEST_COLOR=yes ${CMAKE_CTEST_COMMAND} --verbose)
-
-file(GLOB TEST_FILES "*.cpp")
-list(REMOVE_ITEM TEST_FILES "tests.cpp")
-
-add_executable("priority_queue_tests" EXCLUDE_FROM_ALL ${TEST_FILES})
-target_link_libraries("priority_queue_tests" gtest pthread PRIORITY_QUEUE)
-add_dependencies(. "priority_queue_tests")
-add_test("priority_queue_tests" "./priority_queue_tests")
+add_subdirectory(priority_queue)

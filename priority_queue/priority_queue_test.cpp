@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../priority_queue.h"
+#include "priority_queue.h"
 #include <gtest/gtest.h>
 #include <set>
 
@@ -15,10 +15,8 @@ TEST(PriorityQueue, PushAndPopElements) {
                 int a = rand();
                 test.insert(a);
                 priorityQueue.push(a);
-                std::cout << a << ' ';
             } else {
                 int x = -1, y = -1;
-                std::cout << -1 << ' ';
                 if (test.size()) {
                     x = *test.begin();
                     test.erase(test.begin());
