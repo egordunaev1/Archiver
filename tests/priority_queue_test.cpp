@@ -1,6 +1,4 @@
-#pragma once
-
-#include "priority_queue.h"
+#include "../src/Archiver/priority_queue.h"
 #include <gtest/gtest.h>
 #include <set>
 
@@ -28,9 +26,4 @@ TEST(PriorityQueue, PushAndPopElements) {
             }
         }
     }
-}
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }

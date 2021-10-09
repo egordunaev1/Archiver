@@ -1,5 +1,6 @@
+#pragma once
+
 #include <gtest/gtest.h>
-#include "huffman_trie.h"
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

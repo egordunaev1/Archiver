@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-
+#include <stdlib.h>
 
 template<typename T>
 class PriorityQueue {
