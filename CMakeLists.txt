@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(Archiver)
+project(huffman_trie)
 
 add_executable(MAIN main.cpp)
 
@@ -14,3 +14,4 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_subdirectory(priority_queue)
+add_subdirectory(huffman_trie)
