@@ -52,10 +52,11 @@ void PriorityQueue<T>::fix_down(size_t el) {
         size_t child2 = this->right_child(el);
         if (child2 < this->heap_.size() && this->heap_[child2] < this->heap_[child1])
             child1 = child2;
-        if (this->heap_[child1] >= this->heap_[el])
-            return;
-        std::swap(this->heap_[el], this->heap_[child1]);
-        el = child1;
+        if (this->heap_[child1] < this->heap_[el]){
+            std::swap(this->heap_[el], this->heap_[child1]);
+            el = child1;
+        }
+        else return;
     }
 }
 
