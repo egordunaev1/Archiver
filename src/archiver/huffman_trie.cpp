@@ -15,14 +15,14 @@ nodeptr operator+(const nodeptr& _left, const nodeptr& _right) {
 }
 
 // Конструктор листа
-huffman_trie::node::node(std::pair<int, char>& value) {
+huffman_trie::node::node(std::pair<ull, char>& value) {
     this->frequency = value.first;
-    this->val = { value.second };
+    this->val = value.second;
     this->is_leaf = true;
 }
 
 // Конструктор вершины
-huffman_trie::node::node(int freq, std::shared_ptr <node> lc, std::shared_ptr <node> rc) {
+huffman_trie::node::node(ull freq, std::shared_ptr <node> lc, std::shared_ptr <node> rc) {
     this->frequency = freq;
     this->left_child = std::move(lc);
     this->right_child = std::move(rc);
@@ -30,7 +30,7 @@ huffman_trie::node::node(int freq, std::shared_ptr <node> lc, std::shared_ptr <n
 }
 
 // Построение дерева (возвращает указатель на корень)
-nodeptr huffman_trie::build_tree(std::vector <std::pair<int, char> >& frequency) {
+nodeptr huffman_trie::build_tree(std::vector <std::pair<ull, char> >& frequency) {
     PriorityQueue<nodeptr> priorityQueue;
     for (auto& symbol : frequency)
         priorityQueue.push(std::make_shared<huffman_trie::node>(symbol));
@@ -41,50 +41,57 @@ nodeptr huffman_trie::build_tree(std::vector <std::pair<int, char> >& frequency)
 }
 
 // Заполняет вектор парами символ - длина его кода
-void huffman_trie::get_lens(nodeptr cur, std::vector<std::pair<int, int>>& out, int cur_len) {
+void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<short, char>>& out, short cur_len) {
     if (cur->is_leaf)
-        return out.emplace_back(std::make_pair(cur_len, static_cast<int>(cur->val)));
+        return out.emplace_back(std::make_pair(cur_len, cur->val));
+    cur_len++;
     if (cur->left_child)
-        get_lens(cur->left_child, out, cur_len + 1);
+        get_lens(cur->left_child, out, cur_len);
     if (cur->right_child)
-        get_lens(cur->right_child, out, cur_len + 1);
+        get_lens(cur->right_child, out, cur_len);
 }
 
 // Инкремент байткода
 huffman_trie::bytecode& operator++(huffman_trie::bytecode& bc){
-    int i = 0;
-    for (0; bc.bset[i]; ++i)
+    short i = 0;
+    for (; bc.bset[i]; ++i)
         bc.bset[i] = false;
     bc.bset[i] = true;
-    bc.len += i == bc.len;
     return bc;
 }
 
 // Считает таблицу шифрования на основе длин кодов
-void huffman_trie::make_canonical(std::vector<std::pair<int, int>>& out) {
-    std::sort(out.begin(), out.end());
+void huffman_trie::make_canonical(std::vector<std::pair<short, char>>& lens) {
+    std::sort(lens.begin(), lens.end());
 
     bytecode bc;
-    bc.len = out[0].first;
-    this->table_[out[0].second] = bc;
+    bc.len = lens[0].first;
+    this->table_[lens[0].second] = bc;
 
-    for (int i = 1; i < out.size(); i++) {
+    for (int i = 1; i < lens.size(); i++) {
         ++bc;
-        auto& cur = out[i];
-        bc.bset <<= (std::max(0, cur.first - bc.len));
+        auto& cur = lens[i];
+        bc.bset <<= cur.first - bc.len;
         bc.len = cur.first;
         this->table_[cur.second] = bc;
     }
 }
 
 // Единственный конструктор
-huffman_trie::huffman_trie(std::vector <std::pair<int, char> >& frequency) {
-    if (!frequency.size())
+huffman_trie::huffman_trie(std::vector <std::pair<ull, char> >& frequency) {
+    // Исключение: нет символов
+    if (frequency.empty())
         throw std::invalid_argument("alphabet size is null");
-    this->table_.resize(frequency.size());
-    nodeptr root = this->build_tree(frequency);
 
-    std::vector<std::pair<int, int>> lens;
+    // Исключение: текст не влезает в ull
+    ull sum = 0;
+    for (auto &i : frequency) {
+        if (sum + i.first < sum)
+            throw std::invalid_argument("text length is greater than unsigned long long can fit");
+    }
+
+    nodeptr root = this->build_tree(frequency);
+    std::vector<std::pair<short, char>> lens;
     this->get_lens(root, lens);
     this->make_canonical(lens);
 };

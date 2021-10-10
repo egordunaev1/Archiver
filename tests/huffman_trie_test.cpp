@@ -2,15 +2,24 @@
 
 #include "../src/archiver/huffman_trie.h";
 #include <gtest/gtest.h>
+#include <random>
 
 TEST(huffman_trie, huffman_trie_test) {
-    std::string abc = "gfedcab";
-    int freq[] = {1000, 1000, 1000, 1000, 1000, 1000, 1000};
-    std::vector<std::pair<int, char>>vec(abc.size());
-    for (int i = 0; i < abc.size(); i++)
-        vec[i] = {freq[i], abc[i]};
+    std::string _abc = "abcdefghijklmnopqrstuvwxyz";
+    std::mt19937 rnd(123);
+    for (int test = 0; test < 100; test++) {
+        std::string abc = _abc.substr(1, rnd() % _abc.size());
+        if (abc.empty())
+            continue;
+        std::vector<std::pair<ull, char>> freq;
+        for (auto &i : abc)
+            freq.emplace_back(std::make_pair(rnd(), i));
+        huffman_trie ht(freq);
 
-    huffman_trie ht(vec);
-    for (int i = 0; i < abc.size(); i++)
-        std::cout << abc[i] << ' ' << freq[i] << ' ' << ht.get(abc[i]).bset.to_string().substr(256-ht.get(abc[i]).len, 256) <<' '<<ht.get(abc[i]).len << '\n';
+        huffman_trie::bytecode last;
+        std::sort(freq.rbegin(), freq.rend());
+        for (auto &i : freq) {
+            ASSERT_GE(ht.get(i.second).len,last.len);
+        }
+    }
 }
