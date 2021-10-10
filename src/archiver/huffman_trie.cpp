@@ -15,9 +15,9 @@ nodeptr operator+(const nodeptr& _left, const nodeptr& _right) {
 }
 
 // Конструктор листа
-huffman_trie::node::node(std::pair<ull, char>& value) {
-    this->frequency = value.first;
-    this->val = value.second;
+huffman_trie::node::node(std::pair<const char, ull>& value) {
+    this->frequency = value.second;
+    this->val = value.first;
     this->is_leaf = true;
 }
 
@@ -30,7 +30,7 @@ huffman_trie::node::node(ull freq, std::shared_ptr <node> lc, std::shared_ptr <n
 }
 
 // Построение дерева (возвращает указатель на корень)
-nodeptr huffman_trie::build_tree(std::vector <std::pair<ull, char> >& frequency) {
+nodeptr huffman_trie::build_tree(std::unordered_map<char, ull>& frequency) {
     PriorityQueue<nodeptr> priorityQueue;
     for (auto& symbol : frequency)
         priorityQueue.push(std::make_shared<huffman_trie::node>(symbol));
@@ -67,6 +67,7 @@ void huffman_trie::make_canonical(std::vector<std::pair<short, char>>& lens) {
     bytecode bc;
     bc.len = lens[0].first;
     this->table_[lens[0].second] = bc;
+    this->order_.emplace_back(lens[0].second);
 
     for (int i = 1; i < lens.size(); i++) {
         ++bc;
@@ -74,11 +75,12 @@ void huffman_trie::make_canonical(std::vector<std::pair<short, char>>& lens) {
         bc.bset <<= cur.first - bc.len;
         bc.len = cur.first;
         this->table_[cur.second] = bc;
+        this->order_.emplace_back(cur.second);
     }
 }
 
 // Единственный конструктор
-huffman_trie::huffman_trie(std::vector <std::pair<ull, char> >& frequency) {
+huffman_trie::huffman_trie(std::unordered_map<char, ull>& frequency) {
     // Исключение: нет символов
     if (frequency.empty())
         throw std::invalid_argument("alphabet size is null");
@@ -99,4 +101,8 @@ huffman_trie::huffman_trie(std::vector <std::pair<ull, char> >& frequency) {
 // Получение кода по символу
 huffman_trie::bytecode huffman_trie::get(char chr) {
     return table_[chr];
+}
+
+const std::vector<char>& huffman_trie::get_order() {
+    return this->order_;
 }

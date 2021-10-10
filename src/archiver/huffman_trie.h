@@ -24,19 +24,21 @@ public:
         std::shared_ptr<node> left_child = nullptr;
         std::shared_ptr<node> right_child = nullptr;
 
-        node(std::pair<ull, char>&);
+        explicit node(std::pair<const char, ull>&);
         node(ull freq, std::shared_ptr<node>lc, std::shared_ptr<node>rc);
-        node() {};
+        node() = default;
     };
 
     bytecode get(char chr);
+    const std::vector<char>& get_order();
 
-    huffman_trie(std::vector<std::pair<ull, char> >& frequency);
+    explicit huffman_trie(std::unordered_map<char, ull>& frequency);
 private:
-    std::shared_ptr<node> build_tree(std::vector<std::pair<ull, char> >& frequency);
+    std::shared_ptr<node> build_tree(std::unordered_map<char, ull>& frequency);
     void get_lens(const std::shared_ptr<node>& cur, std::vector<std::pair<short, char>>& out, short cur_len = 0);
     void make_canonical(std::vector<std::pair<short, char>>& lens);
 
+    std::vector<char>order_;
     std::unordered_map<char, bytecode>table_;
 };
 
