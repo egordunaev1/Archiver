@@ -31,7 +31,8 @@ public:
     huffman_trie(std::vector<std::pair<int, char> >& frequency);
 private:
     std::shared_ptr<huffman_trie::node> build_tree(std::vector<std::pair<int, char> >& frequency);
-    void make_canonical(std::shared_ptr<huffman_trie::node> root);
+    void get_lens(std::shared_ptr <node> cur, std::vector<std::pair<int, int>>& out, int cur_len = 0);
+    void make_canonical(std::vector<std::pair<int, int>>& out);
 
     std::vector<bytecode>table_;
 };
