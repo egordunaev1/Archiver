@@ -1,7 +1,10 @@
 #pragma once
 
-#include <vector>
 #include <stdlib.h>
+#include <vector>
+#include <memory>
+#include <stdexcept>
+#include <bitset>
 
 template<typename T>
 class PriorityQueue {
@@ -23,4 +26,4 @@ public:
     PriorityQueue();
 };
 
-#include "priority_queue.cpp"
+#include "priority_queue.tpp"

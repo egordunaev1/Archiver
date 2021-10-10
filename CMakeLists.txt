@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 project(PriorityQueue)
 
+set(CMAKE_CXX_STANDARD 11)
 set(BUILD_TESTS YES)
+
 
 ##############################################################################
 # make archiver library

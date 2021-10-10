@@ -1,9 +1,6 @@
 #pragma once
 
-#include <stdexcept>
-#include <iostream>
 #include "priority_queue.h"
-
 
 // Родитель
 template<typename T>
