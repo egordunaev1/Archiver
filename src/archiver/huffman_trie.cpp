@@ -1,9 +1,5 @@
 #include "huffman_trie.h"
 
-bool _alphabet_comparator(nodeptr a, nodeptr b) {
-    return !b->is_leaf || a->is_leaf && a->val < b->val;
-};
-
 bool operator<(const nodeptr& _left, const nodeptr& _right) {
     return _left->frequency < _right->frequency ||
             _left->frequency == _right->frequency && _left->val > _right->val;
@@ -49,13 +45,17 @@ void _bytecode_increment(huffman_trie::bytecode& bc) {
 }
 
 void huffman_trie::make_canonical(std::shared_ptr <huffman_trie::node> root) {
+    auto alphabet_comparator = [](nodeptr& a, nodeptr& b){
+        return !b->is_leaf || a->is_leaf && a->val < b->val;
+    };
+
     std::vector<nodeptr>vec({std::move(root)});
     bytecode bc;
     bool first_use = true;
     int depth = 0;
     bc.len = 0;
     while (vec.size()) {
-        std::sort(vec.begin(), vec.end(), _alphabet_comparator);
+        std::sort(vec.begin(), vec.end(), alphabet_comparator);
         if (vec[0]->is_leaf) {
             if (first_use)
                 first_use = false;
