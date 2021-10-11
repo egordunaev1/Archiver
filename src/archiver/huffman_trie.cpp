@@ -15,7 +15,7 @@ nodeptr operator+(const nodeptr& _left, const nodeptr& _right) {
 }
 
 // Конструктор листа
-huffman_trie::node::node(std::pair<const char16_t, ull>& value) {
+huffman_trie::node::node(std::pair<const int, ull>& value) {
     this->frequency = value.second;
     this->val = value.first;
     this->is_leaf = true;
@@ -30,7 +30,7 @@ huffman_trie::node::node(ull freq, std::shared_ptr <node> lc, std::shared_ptr <n
 }
 
 // Построение дерева (возвращает указатель на корень)
-nodeptr huffman_trie::build_tree(std::unordered_map<char16_t, ull>& frequency) {
+nodeptr huffman_trie::build_tree(std::unordered_map<int, ull>& frequency) {
     PriorityQueue<nodeptr> priorityQueue;
     for (auto& symbol : frequency)
         priorityQueue.push(std::make_shared<huffman_trie::node>(symbol));
@@ -41,7 +41,7 @@ nodeptr huffman_trie::build_tree(std::unordered_map<char16_t, ull>& frequency) {
 }
 
 // Заполняет вектор парами символ - длина его кода
-void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<short, char16_t>>& out, short cur_len) {
+void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<int, int>>& out, short cur_len) {
     if (cur->is_leaf)
         return out.emplace_back(std::make_pair(cur_len, cur->val));
     cur_len++;
@@ -52,7 +52,7 @@ void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<short, cha
 }
 
 // Инкремент байткода
-bytecode& operator++(bytecode& bc){
+void _bytecode_increment(bytecode& bc){
     short i = 0;
     for (; i < bc.size() && bc[i]; ++i)
         bc[i] = false;
@@ -61,29 +61,27 @@ bytecode& operator++(bytecode& bc){
         bc.emplace_back(true);
     else
         bc[i] = true;
-
-    return bc;
 }
 
 // Считает таблицу шифрования на основе длин кодов
-void huffman_trie::make_canonical(std::vector<std::pair<short, char16_t>>& lens) {
+std::map<int, bytecode> huffman_trie::make_canonical(std::vector<std::pair<int, int>>& lens) {
+    std::map<int, bytecode>table;
+
     std::sort(lens.begin(), lens.end());
 
     bytecode bc(lens[0].first);
-    this->table_[lens[0].second] = bc;
-    this->order_.emplace_back(lens[0].second);
+    table[lens[0].second] = bc;
 
     for (int i = 1; i < lens.size(); i++) {
-        ++bc;
+        _bytecode_increment(bc);
         auto& cur = lens[i];
         bc.insert(bc.begin(), cur.first - bc.size(), false);
-        this->table_[cur.second] = bc;
-        this->order_.emplace_back(cur.second);
+        table[cur.second] = bc;
     }
 }
 
 // Единственный конструктор
-huffman_trie::huffman_trie(std::unordered_map<char16_t, ull>& frequency) {
+huffman_trie::huffman_trie(std::unordered_map<int, ull>& frequency) {
     // Исключение: нет символов
     if (frequency.empty())
         throw std::invalid_argument("alphabet size is null");
@@ -96,16 +94,18 @@ huffman_trie::huffman_trie(std::unordered_map<char16_t, ull>& frequency) {
     }
 
     nodeptr root = this->build_tree(frequency);
-    std::vector<std::pair<short, char16_t>> lens;
+    std::vector<std::pair<int, int>> lens;
     this->get_lens(root, lens);
-    this->make_canonical(lens);
+    this->table_ = huffman_trie::make_canonical(lens);
+    for (auto &i : table_)
+        order_.emplace_back(i.first);
 };
 
 // Получение кода по символу
-bytecode huffman_trie::get(char16_t chr) {
+bytecode huffman_trie::get(int chr) {
     return table_[chr];
 }
 
-const std::vector<char16_t>& huffman_trie::get_order() {
+const std::vector<int>& huffman_trie::get_order() {
     return this->order_;
 }

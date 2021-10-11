@@ -11,7 +11,7 @@ TEST(huffman_trie, huffman_trie_test) {
         std::string abc = _abc.substr(1, rnd() % _abc.size());
         if (abc.empty())
             continue;
-        std::unordered_map<char16_t, ull> freq;
+        std::unordered_map<int, ull> freq;
         for (auto &i : abc)
             freq[i] = rnd();
         huffman_trie ht(freq);

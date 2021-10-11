@@ -11,10 +11,10 @@ private:
 
     void write_in_buffer_(bool val);
 public:
-    writer(std::ostream& stream) : stream_(stream) {};
+    explicit writer(std::ostream& stream) : stream_(stream) {};
     ~writer();
 
-    void write(std::vector<bool>& out);
-    void write(unsigned long long &out);
-    void write(bool &out);
+    void write(std::vector<bool> out);
+    void write(unsigned long long out, int len);
+    void write(bool out);
 };

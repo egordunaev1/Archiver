@@ -15,15 +15,16 @@ void writer::write_in_buffer_(bool val) {
 }
 
 // Запись массива бит
-void writer::write(std::vector<bool> &in) {
+void writer::write(std::vector<bool> in) {
     for (bool val : in)
         this->write_in_buffer_(val);
 }
 
 // Запись числа
-void writer::write(unsigned long long &in) {
+void writer::write(unsigned long long in, int len) {
     std::vector<bool>num;
-    while (in) {
+    while (in || len) {
+        len--;
         num.push_back(in % 2);
         in >>= 2;
     }
@@ -31,7 +32,7 @@ void writer::write(unsigned long long &in) {
 }
 
 // Запись бита
-void writer::write(bool &in) {
+void writer::write(bool in) {
     write_in_buffer_(in);
 }
 

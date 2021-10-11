@@ -6,7 +6,7 @@
 #include <utility>
 #include <algorithm>
 #include <unordered_map>
-
+#include <map>
 #include "priority_queue.h"
 
 using ull=unsigned long long;
@@ -16,27 +16,27 @@ class huffman_trie {
 public:
     struct node {
         ull frequency;
-        char16_t val;
+        int val;
         bool is_leaf = false;
         std::shared_ptr<node> left_child = nullptr;
         std::shared_ptr<node> right_child = nullptr;
 
-        explicit node(std::pair<const char16_t, ull>&);
+        explicit node(std::pair<const int, ull>&);
         node(ull freq, std::shared_ptr<node>lc, std::shared_ptr<node>rc);
         node() = default;
     };
 
-    bytecode get(char16_t chr);
-    const std::vector<char16_t>& get_order();
+    bytecode get(int chr);
+    const std::vector<int>& get_order();
+    static std::map<int, bytecode> make_canonical(std::vector<std::pair<int, int>>& lens);
 
-    explicit huffman_trie(std::unordered_map<char16_t, ull>& frequency);
+    explicit huffman_trie(std::unordered_map<int, ull>& frequency);
 private:
-    std::shared_ptr<node> build_tree(std::unordered_map<char16_t, ull>& frequency);
-    void get_lens(const std::shared_ptr<node>& cur, std::vector<std::pair<short, char16_t>>& out, short cur_len = 0);
-    void make_canonical(std::vector<std::pair<short, char16_t>>& lens);
+    std::shared_ptr<node> build_tree(std::unordered_map<int, ull>& frequency);
+    void get_lens(const std::shared_ptr<node>& cur, std::vector<std::pair<int, int>>& out, short cur_len = 0);
 
-    std::vector<char16_t>order_;
-    std::unordered_map<char16_t, bytecode>table_;
+    std::vector<int>order_;
+    std::map<int, bytecode>table_;
 };
 
 typedef std::shared_ptr<huffman_trie::node> nodeptr;
