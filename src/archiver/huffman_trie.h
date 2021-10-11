@@ -19,27 +19,27 @@ public:
 
     struct node {
         ull frequency;
-        char val;
+        char16_t val;
         bool is_leaf = false;
         std::shared_ptr<node> left_child = nullptr;
         std::shared_ptr<node> right_child = nullptr;
 
-        explicit node(std::pair<const char, ull>&);
+        explicit node(std::pair<const char16_t, ull>&);
         node(ull freq, std::shared_ptr<node>lc, std::shared_ptr<node>rc);
         node() = default;
     };
 
-    bytecode get(char chr);
-    const std::vector<char>& get_order();
+    bytecode get(char16_t chr);
+    const std::vector<char16_t>& get_order();
 
-    explicit huffman_trie(std::unordered_map<char, ull>& frequency);
+    explicit huffman_trie(std::unordered_map<char16_t, ull>& frequency);
 private:
-    std::shared_ptr<node> build_tree(std::unordered_map<char, ull>& frequency);
-    void get_lens(const std::shared_ptr<node>& cur, std::vector<std::pair<short, char>>& out, short cur_len = 0);
-    void make_canonical(std::vector<std::pair<short, char>>& lens);
+    std::shared_ptr<node> build_tree(std::unordered_map<char16_t, ull>& frequency);
+    void get_lens(const std::shared_ptr<node>& cur, std::vector<std::pair<short, char16_t>>& out, short cur_len = 0);
+    void make_canonical(std::vector<std::pair<short, char16_t>>& lens);
 
-    std::vector<char>order_;
-    std::unordered_map<char, bytecode>table_;
+    std::vector<char16_t>order_;
+    std::unordered_map<char16_t, bytecode>table_;
 };
 
 typedef std::shared_ptr<huffman_trie::node> nodeptr;

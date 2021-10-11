@@ -11,13 +11,17 @@ TEST(huffman_trie, huffman_trie_test) {
         std::string abc = _abc.substr(1, rnd() % _abc.size());
         if (abc.empty())
             continue;
-        std::vector<std::pair<ull, char>> freq;
+        std::unordered_map<char16_t, ull> freq;
         for (auto &i : abc)
-            freq.emplace_back(std::make_pair(rnd(), i));
+            freq[i] = rnd();
         huffman_trie ht(freq);
 
         huffman_trie::bytecode last;
-        std::sort(freq.rbegin(), freq.rend());
+
+        std::vector<std::pair<char, ull>> freq_sorted;
+        for (auto &i : freq)
+            freq_sorted.emplace_back(i);
+
         for (auto &i : freq) {
             ASSERT_GE(ht.get(i.second).len,last.len);
         }

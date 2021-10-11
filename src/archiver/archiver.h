@@ -9,18 +9,21 @@ private:
 
     huffman_trie::bytecode buffer_;
 
-    void write(huffman_trie::bytecode bc, std::ofstream& out);
-    void write(std::bitset<9>bs, std::ofstream& out);
-    void write_buffer(std::ofstream& out);
+    void write_(huffman_trie::bytecode bc, std::ofstream& out);
+    void write_(std::bitset<9>bs, std::ofstream& out);
+    void write_buffer_(std::ofstream& out);
 
-    std::bitset<9>read_nine(std::ifstream);
-    bool read_one(std::ifstream);
+    void fill_buffer(std::ifstream& in);
+    std::bitset<9>read_nine_(std::ifstream& in);
+    bool read_one_(std::ifstream& in);
 
+    void build_trie();
+
+    void zip_file_(std::string& file_name, std::ofstream& out);
+    bool unzip_file_(std::ifstream& in);
 
 public:
     void zip(std::vector<std::string>file_paths, std::string archive_name);
-    void zip_file(std::string& file_name, std::ofstream& out);
+    void unzip(std::string archive);
 
-    void unzip(std::ostream& output_stream);
-    void unzip_file(std::ofstream out, std::string file_name);
 };
