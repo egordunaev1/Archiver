@@ -52,11 +52,16 @@ void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<short, cha
 }
 
 // Инкремент байткода
-huffman_trie::bytecode& operator++(huffman_trie::bytecode& bc){
+bytecode& operator++(bytecode& bc){
     short i = 0;
-    for (; bc.bset[i]; ++i)
-        bc.bset[i] = false;
-    bc.bset[i] = true;
+    for (; i < bc.size() && bc[i]; ++i)
+        bc[i] = false;
+
+    if (i == bc.size())
+        bc.emplace_back(true);
+    else
+        bc[i] = true;
+
     return bc;
 }
 
@@ -64,16 +69,14 @@ huffman_trie::bytecode& operator++(huffman_trie::bytecode& bc){
 void huffman_trie::make_canonical(std::vector<std::pair<short, char16_t>>& lens) {
     std::sort(lens.begin(), lens.end());
 
-    bytecode bc;
-    bc.len = lens[0].first;
+    bytecode bc(lens[0].first);
     this->table_[lens[0].second] = bc;
     this->order_.emplace_back(lens[0].second);
 
     for (int i = 1; i < lens.size(); i++) {
         ++bc;
         auto& cur = lens[i];
-        bc.bset <<= cur.first - bc.len;
-        bc.len = cur.first;
+        bc.insert(bc.begin(), cur.first - bc.size(), false);
         this->table_[cur.second] = bc;
         this->order_.emplace_back(cur.second);
     }
@@ -99,7 +102,7 @@ huffman_trie::huffman_trie(std::unordered_map<char16_t, ull>& frequency) {
 };
 
 // Получение кода по символу
-huffman_trie::bytecode huffman_trie::get(char16_t chr) {
+bytecode huffman_trie::get(char16_t chr) {
     return table_[chr];
 }
 

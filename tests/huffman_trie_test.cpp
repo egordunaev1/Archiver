@@ -1,6 +1,6 @@
 #include "../src/Archiver/huffman_trie.h"
 
-#include "../src/archiver/huffman_trie.h";
+#include "../src/archiver/huffman_trie.h"
 #include <gtest/gtest.h>
 #include <random>
 
@@ -16,14 +16,14 @@ TEST(huffman_trie, huffman_trie_test) {
             freq[i] = rnd();
         huffman_trie ht(freq);
 
-        huffman_trie::bytecode last;
+        bytecode last;
 
         std::vector<std::pair<char, ull>> freq_sorted;
         for (auto &i : freq)
             freq_sorted.emplace_back(i);
 
         for (auto &i : freq) {
-            ASSERT_GE(ht.get(i.second).len,last.len);
+            ASSERT_GE(ht.get(i.second).size(),last.size());
         }
     }
 }

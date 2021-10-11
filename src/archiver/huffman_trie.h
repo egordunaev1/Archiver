@@ -4,19 +4,16 @@
 #include <memory>
 #include <stdexcept>
 #include <utility>
+#include <algorithm>
 #include <unordered_map>
 
 #include "priority_queue.h"
 
 using ull=unsigned long long;
+using bytecode=std::vector<bool>;
 
-class huffman_trie{
+class huffman_trie {
 public:
-    struct bytecode {
-        std::bitset<256>bset;
-        short len = 0;
-    };
-
     struct node {
         ull frequency;
         char16_t val;
