@@ -12,14 +12,12 @@ std::mt19937 mt(11);
 void make_test_file() {
 
     std::ofstream out(TEST_FILE);
-    int _c = 26;
-    char c = _c % 256;
-    std::cout << _c << '\n';
+    char c = mt() % 256;
     for (int i = 0; i < 10; ++i)
         out.put(static_cast<char>(c));
     out.close();
 }
-/*
+
 TEST(READER_TEST, ONE_BIT_INPUT) {
     for (int TEST = 0; TEST < 1000; TEST++) {
         make_test_file();
@@ -34,11 +32,11 @@ TEST(READER_TEST, ONE_BIT_INPUT) {
             std::vector<bool> tmp;
             unsigned char _c = c;
             while (_c || tmp.size() != 8) {
-                tmp.emplace_back(_c % 2);
+                tmp.push_back(_c % 2);
                 _c >>= 1;
             }
             for (int i = tmp.size() - 1; i >= 0; i--)
-                resCheck.emplace_back(tmp[i]);
+                resCheck.push_back(tmp[i]);
         }
         inCheck.close();
 
@@ -47,7 +45,7 @@ TEST(READER_TEST, ONE_BIT_INPUT) {
 
         bool tmp;
         while (READER.read(tmp))
-            resTest.emplace_back(tmp);
+            resTest.push_back(tmp);
         inTest.close();
 
 
@@ -83,4 +81,3 @@ TEST(READER_TEST, NUMBER_INPUT) {
         std::remove(TEST_FILE);
     }
 }
-*/

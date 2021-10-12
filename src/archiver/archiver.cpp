@@ -1,9 +1,11 @@
 #include "archiver.h"
 
-void archiver::zip(std::vector<std::string> file_paths, std::string archive_name) {
+#include <utility>
+
+void archiver::zip(std::vector<std::string> file_paths, const std::string& archive_name) {
     std::ofstream out(archive_name);
     for (int i = 0; i < file_paths.size(); i++) {
-        int eof = i == file_paths.size() - 1 ? this->ARCHIVE_END : this->FILENAME_END;
+        int eof = i == file_paths.size() - 1 ? archiver::ARCHIVE_END : archiver::FILENAME_END;
         zip_file_(file_paths[i], out, eof);
     }
 }
@@ -15,9 +17,9 @@ void archiver::zip_file_(std::string &file_name, std::ofstream &out, int eof) {
 
     // Подсчет количества вхождений
     std::unordered_map<int, ull> freq;
-    freq[this->FILENAME_END]++;
-    freq[this->ONE_MORE_FILE]++;
-    freq[this->ARCHIVE_END]++;
+    freq[archiver::FILENAME_END]++;
+    freq[archiver::ONE_MORE_FILE]++;
+    freq[archiver::ARCHIVE_END]++;
     for (ull c; _reader.read(8, c);)
         freq[c]++;
 
@@ -45,10 +47,12 @@ void archiver::zip_file_(std::string &file_name, std::ofstream &out, int eof) {
     // Кодируем имя файла
     for (auto chr : file_name)
         _writer.write(huffmanTrie.get(chr));
-    _writer.write(huffmanTrie.get(this->FILENAME_END));
+    _writer.write(huffmanTrie.get(archiver::FILENAME_END));
 
     for (ull chr; _reader.read(8, chr);)
         _writer.write(huffmanTrie.get(chr));
+
+    _writer.write(huffmanTrie.get(eof));
 }
 
 std::shared_ptr<archiver::node> archiver::build_trie(std::unordered_map<int, bytecode> codes) {
@@ -77,11 +81,10 @@ std::shared_ptr<archiver::node> archiver::build_trie(std::unordered_map<int, byt
     return root;
 }
 
-void archiver::unzip(std::string archive) {
+void archiver::unzip(const std::string& archive) {
     std::ifstream in(archive);
     reader _reader(in);
-    while (true)
-        unzip_file_(_reader);
+    while (unzip_file_(_reader));
 }
 
 bool archiver::unzip_file_(reader &_reader) {
@@ -104,19 +107,47 @@ bool archiver::unzip_file_(reader &_reader) {
     }
     if (abc_it != abc_size)
         throw std::runtime_error("The file is corrupted");
-    
-    bytecode bc;
-    std::unordered_map<int, bytecode> codes;
-    for (auto i : lens) {
-        
+
+    std::unordered_map<int, bytecode> codes = huffman_trie::make_canonical(lens);
+    std::shared_ptr<archiver::node> root = archiver::build_trie(codes);
+
+    std::ofstream out(archiver::read_filename(root, _reader));
+    writer _writer(out);
+
+    return archiver::unzip_body(root, _reader, _writer);
+}
+
+int archiver::read_code(std::shared_ptr<archiver::node> cur, reader& _reader) {
+    while (cur->l || cur->r) {
+        bool b;
+        _reader.read(b);
+        if (!b) cur = cur->l;
+        else cur = cur->r;
+        if (!cur)
+            throw std::runtime_error("The file is corrupted");
     }
+    return cur->val;
+}
 
+std::string archiver::read_filename(std::shared_ptr<archiver::node> root, reader &_reader) {
+    std::string file_name;
+    int x = read_code(std::move(root), _reader);
+    if (x == archiver::FILENAME_END)
+        return file_name;
+    else
+        file_name.push_back(static_cast<char>(x));
+    throw std::runtime_error("The file is corrupted");
+}
 
-
-
-
-
-
+bool archiver::unzip_body(const std::shared_ptr <node>& root, reader &_reader, writer &_writer) {
+    while (true) {
+        int x = archiver::read_code(root, _reader);
+        if (x == archiver::ARCHIVE_END)
+            return false;
+        if (x == archiver::ONE_MORE_FILE)
+            return true;
+        _writer.write(x,8);
+    }
 }
 
 

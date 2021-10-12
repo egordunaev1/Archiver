@@ -16,16 +16,20 @@ private:
         std::shared_ptr<node> r = nullptr;
     };
 
-    const int FILENAME_END=256;
-    const int ONE_MORE_FILE=257;
-    const int ARCHIVE_END=258;
+    static const int FILENAME_END=256;
+    static const int ONE_MORE_FILE=257;
+    static const int ARCHIVE_END=258;
 
-    std::shared_ptr<node> build_trie(std::unordered_map<int, bytecode> codes);
+    static bool unzip_body(const std::shared_ptr<archiver::node>& root, reader& _reader, writer& _writer);
+    static std::string read_filename(std::shared_ptr<archiver::node> root, reader& _reader);
+
+    static int read_code(std::shared_ptr<archiver::node> root, reader& _reader);
+    static std::shared_ptr<node> build_trie(std::unordered_map<int, bytecode> codes);
 
     void zip_file_(std::string& file_name, std::ofstream& out, int eof);
     bool unzip_file_(reader& _reader);
 
 public:
-    void zip(std::vector<std::string>file_paths, std::string archive_name);
-    void unzip(std::string archive);
+    void zip(std::vector<std::string>file_paths, const std::string& archive_name);
+    void unzip(const std::string& archive);
 };

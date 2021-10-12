@@ -27,7 +27,7 @@ bool reader::read(size_t amount, std::vector<bool> &out) {
         bool bit;
         if (!this->read_from_buffer_(bit))
             return false;
-        out.emplace_back(bit);
+        out.push_back(bit);
     }
     return true;
 }

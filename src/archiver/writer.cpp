@@ -2,7 +2,7 @@
 
 // Запись в буффер
 void writer::write_in_buffer_(bool val) {
-    this->buffer_.emplace_back(val);
+    this->buffer_.push_back(val);
 
     if (this->buffer_.size() == 8) {
         char16_t byte;

@@ -43,7 +43,7 @@ nodeptr huffman_trie::build_tree(std::unordered_map<int, ull>& frequency) {
 // Заполняет вектор парами символ - длина его кода
 void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<int, int>>& out, short cur_len) {
     if (cur->is_leaf)
-        return out.emplace_back(std::make_pair(cur_len, cur->val));
+        return void(out.emplace_back(std::make_pair(cur_len, cur->val)));
     cur_len++;
     if (cur->left_child)
         get_lens(cur->left_child, out, cur_len);
@@ -58,14 +58,14 @@ void _bytecode_increment(bytecode& bc){
         bc[i] = false;
 
     if (i == bc.size())
-        bc.emplace_back(true);
+        bc.push_back(true);
     else
         bc[i] = true;
 }
 
 // Считает таблицу шифрования на основе длин кодов
-std::map<int, bytecode> huffman_trie::make_canonical(std::vector<std::pair<int, int>>& lens) {
-    std::map<int, bytecode>table;
+std::unordered_map<int, bytecode> huffman_trie::make_canonical(std::vector<std::pair<int, int>>& lens) {
+    std::unordered_map<int, bytecode>table;
 
     std::sort(lens.begin(), lens.end());
 
@@ -78,6 +78,7 @@ std::map<int, bytecode> huffman_trie::make_canonical(std::vector<std::pair<int, 
         bc.insert(bc.begin(), cur.first - bc.size(), false);
         table[cur.second] = bc;
     }
+    return table;
 }
 
 // Единственный конструктор
@@ -94,7 +95,7 @@ huffman_trie::huffman_trie(std::unordered_map<int, ull>& frequency) {
     }
 
     nodeptr root = this->build_tree(frequency);
-    std::vector<std::pair<int, int>> lens;
+    std::vector<std::pair<int, int> > lens;
     this->get_lens(root, lens);
     this->table_ = huffman_trie::make_canonical(lens);
     for (auto &i : table_)
