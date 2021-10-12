@@ -77,6 +77,7 @@ std::unordered_map<int, bytecode> huffman_trie::make_canonical(std::vector<std::
         auto& cur = lens[i];
         bc.insert(bc.begin(), cur.first - bc.size(), false);
         table[cur.second] = bc;
+        std::reverse(table[cur.second].begin(), table[cur.second].end());
     }
     return table;
 }
@@ -92,6 +93,7 @@ huffman_trie::huffman_trie(std::unordered_map<int, ull>& frequency) {
     for (auto &i : frequency) {
         if (sum + i.first < sum)
             throw std::invalid_argument("text length is greater than unsigned long long can fit");
+        sum += i.first;
     }
 
     nodeptr root = this->build_tree(frequency);
@@ -99,7 +101,8 @@ huffman_trie::huffman_trie(std::unordered_map<int, ull>& frequency) {
     this->get_lens(root, lens);
     this->table_ = huffman_trie::make_canonical(lens);
     for (auto &i : table_)
-        order_.emplace_back(i.first);
+        this->order_.emplace_back(i.second.size(), i.first);
+    std::sort(this->order_.begin(), this->order_.end());
 };
 
 // Получение кода по символу
@@ -107,6 +110,6 @@ bytecode huffman_trie::get(int chr) {
     return table_[chr];
 }
 
-const std::vector<int>& huffman_trie::get_order() {
+const std::vector<std::pair<int, int>>& huffman_trie::get_order() {
     return this->order_;
 }

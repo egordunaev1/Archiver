@@ -14,7 +14,7 @@ public:
     explicit writer(std::ostream& stream) : stream_(stream) {};
     ~writer();
 
-    void write(std::vector<bool> out);
+    void write(const std::vector<bool>& out);
     void write(unsigned long long out, int len);
     void write(bool out);
 };

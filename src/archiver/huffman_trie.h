@@ -27,16 +27,16 @@ public:
     };
 
     bytecode get(int chr);
-    const std::vector<int>& get_order();
+    const std::vector<std::pair<int, int>>& get_order();
     static std::unordered_map<int, bytecode> make_canonical(std::vector<std::pair<int, int>>& lens);
 
     explicit huffman_trie(std::unordered_map<int, ull>& frequency);
+    std::unordered_map<int, bytecode>table_;
 private:
     std::shared_ptr<node> build_tree(std::unordered_map<int, ull>& frequency);
+
     void get_lens(const std::shared_ptr<node>& cur, std::vector<std::pair<int, int>>& out, short cur_len = 0);
+    std::vector<std::pair<int, int>>order_;
 
-    std::vector<int>order_;
-    std::unordered_map<int, bytecode>table_;
 };
-
 typedef std::shared_ptr<huffman_trie::node> nodeptr;

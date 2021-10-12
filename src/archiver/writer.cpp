@@ -5,35 +5,36 @@ void writer::write_in_buffer_(bool val) {
     this->buffer_.push_back(val);
 
     if (this->buffer_.size() == 8) {
-        char16_t byte;
+        int byte = 0;
 
-        for (int i = 7; i >= 0; --i)
-            byte = static_cast<char16_t>((byte  << 1) + this->buffer_[i]);
-        this->stream_ << byte;
+        for (int i = 0; i < 8; ++i)
+            byte = (byte  << 1) + this->buffer_[i];
+        this->stream_ << static_cast<char>(byte);
         this->buffer_.clear();
     }
 }
 
 // Запись массива бит
-void writer::write(std::vector<bool> in) {
-    for (bool val : in)
+void writer::write(const std::vector<bool>& out) {
+    for (bool val : out)
         this->write_in_buffer_(val);
 }
 
 // Запись числа
-void writer::write(unsigned long long in, int len) {
+void writer::write(unsigned long long out, int len) {
     std::vector<bool>num;
-    while (in || len) {
+    while (out || len) {
         len--;
-        num.push_back(in % 2);
-        in >>= 2;
+        num.push_back(out % 2);
+        out >>= 1;
     }
+    std::reverse(num.begin(), num.end());
     this->write(num);
 }
 
 // Запись бита
-void writer::write(bool in) {
-    write_in_buffer_(in);
+void writer::write(bool out) {
+    write_in_buffer_(out);
 }
 
 // Допись буффера при удалении класса

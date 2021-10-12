@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <random>
 
-TEST(huffman_trie, huffman_trie_test) {
+TEST(archiver_test, archiver_hand_test) {
     std::ofstream first("test1.txt");
     std::ofstream second("test2.txt");
 
@@ -11,6 +11,8 @@ TEST(huffman_trie, huffman_trie_test) {
 
     first << rand_text1;
     second << rand_text2;
+    first.close();
+    second.close();
 
     std::vector<std::string>paths = {"test1.txt", "text2.txt"};
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <fstream>
 #include <vector>
 #include <unordered_map>
@@ -7,6 +9,10 @@
 
 using ull=unsigned long long;
 
+const int ARCHIVE_END = 258;
+const int FILENAME_END = 256;
+const int ONE_MORE_FILE = 257;
+
 class archiver {
 private:
     class node{
@@ -15,10 +21,6 @@ private:
         std::shared_ptr<node> l = nullptr;
         std::shared_ptr<node> r = nullptr;
     };
-
-    static const int FILENAME_END=256;
-    static const int ONE_MORE_FILE=257;
-    static const int ARCHIVE_END=258;
 
     static bool unzip_body(const std::shared_ptr<archiver::node>& root, reader& _reader, writer& _writer);
     static std::string read_filename(std::shared_ptr<archiver::node> root, reader& _reader);

@@ -1,4 +1,4 @@
-#include "../src/Archiver/priority_queue.h"
+#include "../src/archiver/priority_queue.h"
 #include <gtest/gtest.h>
 #include <set>
 
