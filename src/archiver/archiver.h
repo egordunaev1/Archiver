@@ -24,12 +24,16 @@ private:
         std::shared_ptr<node> l = nullptr;
         std::shared_ptr<node> r = nullptr;
     };
+    using nodeptr=std::shared_ptr<node>;
+
+    static std::unordered_map<int, ull> count_frequency(reader& _reader);
+    static std::shared_ptr<node> build_trie(std::unordered_map<int, bitcode> codes);
+    static std::string read_filename(const std::shared_ptr<archiver::node>& root, reader& _reader);
+    static void write_meta(writer& _writer, reader& _reader, huffman_trie& huffmanTrie);
+    static void write_body(writer& _writer, reader& _reader, huffman_trie& huffmanTrie);
 
     static bool unzip_body(const std::shared_ptr<archiver::node>& root, reader& _reader, writer& _writer);
-    static std::string read_filename(const std::shared_ptr<archiver::node>& root, reader& _reader);
-
     static int read_code(std::shared_ptr<archiver::node> root, reader& _reader);
-    static std::shared_ptr<node> build_trie(std::unordered_map<int, bytecode> codes);
 
     static void zip_file_(reader& _reader, writer& _writer, int eof);
     static bool unzip_file_(reader& _reader);

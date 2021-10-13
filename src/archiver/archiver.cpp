@@ -1,11 +1,9 @@
 #include "archiver.h"
 
-/*
- * - Разбить функции
+/* - Разбить функции
  * - Добавить вывод времени
  * - Добавить работу с консольными параметрами
- * - Продолжить рефакторинг
- */
+ * - Продолжить рефакторинг */
 
 void archiver::zip(std::vector<std::string> file_paths, const std::string& archive_name) {
     writer _writer(archive_name);
@@ -17,55 +15,19 @@ void archiver::zip(std::vector<std::string> file_paths, const std::string& archi
 }
 
 void archiver::zip_file_(reader& _reader, writer& _writer, int eof) {
-    // Подсчет количества вхождений
-    std::unordered_map<int, ull> freq;
-    freq[FILENAME_END]++;
-    freq[ONE_MORE_FILE]++;
-    freq[ARCHIVE_END]++;
-    for (unsigned char c : _reader.get_name())
-        freq[c]++;
-    for (ull c; _reader.read(8, c);)
-        freq[c]++;
-
+    auto freq = archiver::count_frequency(_reader);
     huffman_trie huffmanTrie(freq);
-    auto root = build_trie(huffmanTrie.table_);
-    auto order = huffmanTrie.get_order();
-    _writer.write(static_cast<ull>(order.size()), 9);
-    for (auto s : order)
-        _writer.write(static_cast<ull>(s.second), 9);
-
-    // Запись количества кодов каждой длины
-    int cnt = 0;
-    int sz = 1;
-    for (auto s : order) {
-        int cur = s.first;
-        for (; sz < cur; sz++) {
-            _writer.write(static_cast<ull>(cnt), 9);
-            cnt = 0;
-        }
-        cnt++;
-    }
-    if (cnt)
-        _writer.write(static_cast<ull>(cnt), 9);
-
-    // Кодируем имя файла
-    for (unsigned char chr : _reader.get_name())
-        _writer.write(huffmanTrie.get(chr));
-    _writer.write(huffmanTrie.get(FILENAME_END));
-
-    _reader.reopen();
-    for (ull chr; _reader.read(8, chr);)
-        _writer.write(huffmanTrie.get(chr));
-
+    archiver::write_meta(_writer, _reader, huffmanTrie);
+    archiver::write_body(_writer, _reader, huffmanTrie);
     _writer.write(huffmanTrie.get(eof));
 }
 
-std::shared_ptr<archiver::node> archiver::build_trie(std::unordered_map<int, bytecode> codes) {
-    std::shared_ptr<archiver::node> root = std::make_shared<archiver::node>(node());
+archiver::nodeptr archiver::build_trie(std::unordered_map<int, bitcode> codes) {
+   archiver::nodeptr root = std::make_shared<archiver::node>(node());
     for (auto &i : codes) {
-        bytecode& path = i.second;
+        bitcode& path = i.second;
         std::reverse(path.begin(), path.end());
-        std::shared_ptr<archiver::node> cur = root;
+        archiver::nodeptr cur = root;
 
         while (!path.empty()) {
             bool go = path.back();
@@ -112,15 +74,15 @@ bool archiver::unzip_file_(reader &_reader) {
     if (abc_it != abc_size)
         throw std::runtime_error("The file is corrupted");
 
-    std::unordered_map<int, bytecode> codes = huffman_trie::make_canonical(lens);
-    std::shared_ptr<archiver::node> root = archiver::build_trie(codes);
+    std::unordered_map<int, bitcode> codes = huffman_trie::make_canonical(lens);
+    archiver::nodeptr root = archiver::build_trie(codes);
 
     writer _writer(archiver::read_filename(root, _reader));
 
     return archiver::unzip_body(root, _reader, _writer);
 }
 
-int archiver::read_code(std::shared_ptr<archiver::node> cur, reader& _reader) {
+int archiver::read_code(archiver::nodeptr cur, reader& _reader) {
     while (cur->l || cur->r) {
         bool go;
         _reader.read(go);
@@ -156,4 +118,46 @@ bool archiver::unzip_body(const std::shared_ptr <node>& root, reader &_reader, w
     }
 }
 
+// Подсчет вхождений
+std::unordered_map<int, ull> archiver::count_frequency(reader &_reader) {
+    std::unordered_map<int, ull> freq;
+    freq[FILENAME_END]++;
+    freq[ONE_MORE_FILE]++;
+    freq[ARCHIVE_END]++;
+    for (unsigned char c : _reader.get_name())
+        freq[c]++;
+    for (ull c; _reader.read(8, c);)
+        freq[c]++;
+    _reader.reopen();
+    return freq;
+}
 
+void archiver::write_meta(writer& _writer, reader& _reader, huffman_trie& huffmanTrie) {
+    std::vector<std::pair<int, int>> order = huffmanTrie.get_order();
+
+    // Запись алфавита
+    _writer.write(static_cast<ull>(order.size()), 9);
+    for (std::pair<int, int> s : order)
+        _writer.write(static_cast<ull>(s.second), 9);
+
+    // Запись длин кодов
+    for (size_t i = 0, cnt = 0, sz = 0; i < order.size(); i++, cnt++) {
+        int cur = order[i].first;
+        for (; sz < cur; sz++) {
+            _writer.write(static_cast<ull>(cnt), 9);
+            cnt = 0;
+        }
+        if (i == order.size() - 1 && cnt)
+            _writer.write(static_cast<ull>(cnt), 9);
+    }
+
+    // Кодируем имя файла
+    for (unsigned char chr : _reader.get_name())
+        _writer.write(huffmanTrie.get(chr));
+    _writer.write(huffmanTrie.get(FILENAME_END));
+}
+
+void archiver::write_body(writer &_writer, reader &_reader, huffman_trie &huffmanTrie) {
+    for (ull chr; _reader.read(8, chr);)
+        _writer.write(huffmanTrie.get(chr));
+}

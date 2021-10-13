@@ -9,7 +9,7 @@ bool reader::read_from_buffer_(bool &out) {
 
         unsigned char _byte = byte;
         while (_byte || buffer_.size() != 8) {
-            buffer_.push_back(static_cast<bool>(_byte % 2));
+            buffer_.emplace_back(static_cast<bool>(_byte % 2));
             _byte >>= 1;
         }
     }

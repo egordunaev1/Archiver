@@ -14,7 +14,7 @@ TEST(huffman_trie, huffman_trie_test) {
             freq[i] = rnd();
         huffman_trie ht(freq);
 
-        bytecode last;
+        bitcode last;
 
         std::vector<std::pair<char, ull>> freq_sorted;
         for (auto &i : freq)
