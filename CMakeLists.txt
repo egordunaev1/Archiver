@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.14)
 project(Archiver)
 
-set(BUILD_TESTS YES)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -O3")
+SET(CMAKE_CXX_STANDARD_REQUIRED 17)
+SET(CMAKE_BUILD_TYPE Debug)
+
+set(BUILD_TESTS NO)
 
 ##############################################################################
 # make archiver library
@@ -53,9 +57,9 @@ if(${BUILD_TESTS})
     enable_testing()
 
     file(
-        GLOB_RECURSE
-        ARCHIVER_TESTS_SRC_FILES
-        tests/*test.cpp tests/run_tests.cpp
+            GLOB_RECURSE
+            ARCHIVER_TESTS_SRC_FILES
+            tests/*test.cpp tests/run_tests.cpp
     )
 
     # Build one file for all tests

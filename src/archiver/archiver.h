@@ -29,7 +29,7 @@ private:
     static std::string read_filename(const std::shared_ptr<archiver::node>& root, reader& _reader);
 
     static int read_code(std::shared_ptr<archiver::node> root, reader& _reader);
-    static std::shared_ptr<node> build_trie(std::unordered_map<int, bytecode> codes);
+    static std::shared_ptr<node> build_trie(std::unordered_map<int, bitcode> codes);
 
     static void zip_file_(reader& _reader, writer& _writer, int eof);
     static bool unzip_file_(reader& _reader);

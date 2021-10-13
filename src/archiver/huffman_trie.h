@@ -10,7 +10,7 @@
 #include "priority_queue.h"
 
 using ull=unsigned long long;
-using bytecode=std::vector<bool>;
+using bitcode=std::vector<bool>;
 
 class huffman_trie {
 public:
@@ -26,12 +26,12 @@ public:
         node() = default;
     };
 
-    bytecode get(int chr);
+    bitcode get(int chr);
     const std::vector<std::pair<int, int>>& get_order();
-    static std::unordered_map<int, bytecode> make_canonical(std::vector<std::pair<int, int>>& lens);
+    static std::unordered_map<int, bitcode> make_canonical(std::vector<std::pair<int, int>>& lens);
 
     explicit huffman_trie(std::unordered_map<int, ull>& frequency);
-    std::unordered_map<int, bytecode>table_;
+    std::unordered_map<int, bitcode>table_;
 private:
     std::shared_ptr<node> build_tree(std::unordered_map<int, ull>& frequency);
 

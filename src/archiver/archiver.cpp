@@ -60,10 +60,10 @@ void archiver::zip_file_(reader& _reader, writer& _writer, int eof) {
     _writer.write(huffmanTrie.get(eof));
 }
 
-std::shared_ptr<archiver::node> archiver::build_trie(std::unordered_map<int, bytecode> codes) {
+std::shared_ptr<archiver::node> archiver::build_trie(std::unordered_map<int, bitcode> codes) {
     std::shared_ptr<archiver::node> root = std::make_shared<archiver::node>(node());
     for (auto &i : codes) {
-        bytecode& path = i.second;
+        bitcode& path = i.second;
         std::reverse(path.begin(), path.end());
         std::shared_ptr<archiver::node> cur = root;
 
@@ -112,7 +112,7 @@ bool archiver::unzip_file_(reader &_reader) {
     if (abc_it != abc_size)
         throw std::runtime_error("The file is corrupted");
 
-    std::unordered_map<int, bytecode> codes = huffman_trie::make_canonical(lens);
+    std::unordered_map<int, bitcode> codes = huffman_trie::make_canonical(lens);
     std::shared_ptr<archiver::node> root = archiver::build_trie(codes);
 
     writer _writer(archiver::read_filename(root, _reader));

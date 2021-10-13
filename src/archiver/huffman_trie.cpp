@@ -10,10 +10,10 @@ bool operator<(const nodeptr& _left, const nodeptr& _right) {
 // Перегрузка операторов сложения указателей на вершины
 nodeptr operator+(const nodeptr& _left, const nodeptr& _right) {
     return std::make_shared<huffman_trie::node>(
-        _left->frequency + _right->frequency,
-        _left,
-        _right
-    );
+            _left->frequency + _right->frequency,
+            _left,
+            _right
+            );
 }
 
 // Конструктор листа
@@ -45,7 +45,7 @@ nodeptr huffman_trie::build_tree(std::unordered_map<int, ull>& frequency) {
 // Заполняет вектор парами символ - длина его кода
 void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<int, int>>& out, short cur_len) {
     if (cur->is_leaf)
-        return void(out.emplace_back(std::make_pair(cur_len, cur->val)));
+        return void(out.emplace_back(cur_len, cur->val));
     cur_len++;
     if (cur->left_child)
         get_lens(cur->left_child, out, cur_len);
@@ -54,7 +54,7 @@ void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<int, int>>
 }
 
 // Инкремент байткода
-void bytecode_increment(bytecode& bc){
+void bitcode_increment(bitcode& bc){
     short i = 0;
     for (; i < bc.size() && bc[i]; ++i)
         bc[i] = false;
@@ -66,16 +66,16 @@ void bytecode_increment(bytecode& bc){
 }
 
 // Считает таблицу шифрования на основе длин кодов
-std::unordered_map<int, bytecode> huffman_trie::make_canonical(std::vector<std::pair<int, int>>& lens) {
-    std::unordered_map<int, bytecode>table;
+std::unordered_map<int, bitcode> huffman_trie::make_canonical(std::vector<std::pair<int, int>>& lens) {
+    std::unordered_map<int, bitcode>table;
 
     std::sort(lens.begin(), lens.end());
 
-    bytecode bc(lens[0].first);
+    bitcode bc(lens[0].first);
     table[lens[0].second] = bc;
 
     for (int i = 1; i < lens.size(); i++) {
-        bytecode_increment(bc);
+        bitcode_increment(bc);
         auto& cur = lens[i];
         bc.insert(bc.begin(), cur.first - bc.size(), false);
         table[cur.second] = bc;
@@ -108,7 +108,7 @@ huffman_trie::huffman_trie(std::unordered_map<int, ull>& frequency) {
 };
 
 // Получение кода по символу
-bytecode huffman_trie::get(int chr) {
+bitcode huffman_trie::get(int chr) {
     return table_[chr];
 }
 
