@@ -14,16 +14,8 @@ TEST(archiver_test, archiver_hand_test) {
     first.close();
     second.close();
 
-    std::vector<std::string>paths = {"test1.txt", "text2.txt"};
+    std::vector<std::string>paths = {"folder/z.mp4", "folder/x.mp4"};
 
-    archiver arch;
-    arch.zip(paths, "myarch.xuy");
-    std::remove("test1.txt");
-    std::remove("test2.txt");
-    arch.unzip("myarch.xuy");
-
-    std::ifstream in("test1.txt", std::ifstream::binary);
-    char c;
-    while (in.get(c))
-        std::cout << c;
+    archiver::zip(paths, "myarch.xuy");
+    archiver::unzip("myarch.xuy");
 }

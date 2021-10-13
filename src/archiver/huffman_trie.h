@@ -37,6 +37,5 @@ private:
 
     void get_lens(const std::shared_ptr<node>& cur, std::vector<std::pair<int, int>>& out, short cur_len = 0);
     std::vector<std::pair<int, int>>order_;
-
 };
 typedef std::shared_ptr<huffman_trie::node> nodeptr;

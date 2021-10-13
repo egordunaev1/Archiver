@@ -1,5 +1,7 @@
 #include "huffman_trie.h"
 
+#include <utility>
+
 // Перегрузка операторов сравнения указателей на вершины
 bool operator<(const nodeptr& _left, const nodeptr& _right) {
     return _left->frequency < _right->frequency;
@@ -52,7 +54,7 @@ void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<int, int>>
 }
 
 // Инкремент байткода
-void _bytecode_increment(bytecode& bc){
+void bytecode_increment(bytecode& bc){
     short i = 0;
     for (; i < bc.size() && bc[i]; ++i)
         bc[i] = false;
@@ -73,7 +75,7 @@ std::unordered_map<int, bytecode> huffman_trie::make_canonical(std::vector<std::
     table[lens[0].second] = bc;
 
     for (int i = 1; i < lens.size(); i++) {
-        _bytecode_increment(bc);
+        bytecode_increment(bc);
         auto& cur = lens[i];
         bc.insert(bc.begin(), cur.first - bc.size(), false);
         table[cur.second] = bc;

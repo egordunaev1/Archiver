@@ -10,7 +10,7 @@ private:
 
     bool read_from_buffer_(bool& out);
 public:
-    reader(std::istream& stream) : stream_(stream) {};
+    explicit reader(std::istream& stream) : stream_(stream) {};
 
     bool read(size_t amount, std::vector<bool>& out);
     bool read(size_t amount, unsigned long long &out);

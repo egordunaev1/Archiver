@@ -3,6 +3,8 @@
 #include <fstream>
 #include <vector>
 #include <unordered_map>
+#include <string>
+
 #include "huffman_trie.h"
 #include "reader.h"
 #include "writer.h"
@@ -23,15 +25,15 @@ private:
     };
 
     static bool unzip_body(const std::shared_ptr<archiver::node>& root, reader& _reader, writer& _writer);
-    static std::string read_filename(std::shared_ptr<archiver::node> root, reader& _reader);
+    static std::string read_filename(const std::shared_ptr<archiver::node>& root, reader& _reader);
 
     static int read_code(std::shared_ptr<archiver::node> root, reader& _reader);
     static std::shared_ptr<node> build_trie(std::unordered_map<int, bytecode> codes);
 
-    void zip_file_(std::string& file_name, std::ofstream& out, int eof);
-    bool unzip_file_(reader& _reader);
+    static void zip_file_(std::string& file_name, writer& _writer, int eof);
+    static bool unzip_file_(reader& _reader);
 
 public:
-    void zip(std::vector<std::string>file_paths, const std::string& archive_name);
-    void unzip(const std::string& archive);
+    static void zip(std::vector<std::string>file_paths, const std::string& archive_name);
+    static void unzip(const std::string& archive);
 };

@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 project(Archiver)
 
-set(CMAKE_CXX_STANDARD 20)
 set(BUILD_TESTS YES)
 
 ##############################################################################
@@ -26,6 +25,16 @@ ADD_LIBRARY(
         SHARED
         ${ARCHIVER_LIBRARY_SRC_FILES}
         ${ARCHIVER_LIBRARY_SRC_FILES}
+)
+
+ADD_EXECUTABLE(
+        my_archiver
+        main.cpp
+)
+
+TARGET_LINK_LIBRARIES(
+        my_archiver
+        archiver
 )
 
 ##############################################################################

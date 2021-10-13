@@ -5,11 +5,11 @@ void writer::write_in_buffer_(bool val) {
     this->buffer_.push_back(val);
 
     if (this->buffer_.size() == 8) {
-        int byte = 0;
+        unsigned char byte = 0;
 
         for (int i = 0; i < 8; ++i)
             byte = (byte  << 1) + this->buffer_[i];
-        this->stream_ << static_cast<char>(byte);
+        this->stream_.put(static_cast<char>(byte));
         this->buffer_.clear();
     }
 }

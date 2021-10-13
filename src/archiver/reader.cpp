@@ -6,7 +6,6 @@ bool reader::read_from_buffer_(bool &out) {
         char byte;
         if (!this->stream_.get(byte))
             return false;
-        this->buffer_.clear();
 
         unsigned char _byte = byte;
         while (_byte || buffer_.size() != 8) {
