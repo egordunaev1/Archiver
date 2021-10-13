@@ -8,7 +8,7 @@ void writer::write_in_buffer_(bool val) {
         unsigned char byte = 0;
 
         for (int i = 0; i < 8; ++i)
-            byte = (byte  << 1) + this->buffer_[i];
+            byte = (byte << 1) + this->buffer_[i];
         this->stream_.put(static_cast<char>(byte));
         this->buffer_.clear();
     }
@@ -22,14 +22,10 @@ void writer::write(const std::vector<bool>& out) {
 
 // Запись числа
 void writer::write(unsigned long long out, int len) {
-    std::vector<bool>num;
-    while (out || len) {
-        len--;
-        num.push_back(out % 2);
+    while (len--) {
+        this->write_in_buffer_(out & 1);
         out >>= 1;
     }
-    std::reverse(num.begin(), num.end());
-    this->write(num);
 }
 
 // Запись бита
@@ -43,3 +39,23 @@ writer::~writer() {
         write_in_buffer_(false);
 }
 
+// Конструктор от файла
+writer::writer(const std::string &file) {
+    this->stream_.open(this->file_ = file, std::ofstream::binary);
+}
+
+// Путь к файлу
+std::string writer::get_path() {
+    return this->file_;
+}
+
+// Имя файла
+std::string writer::get_name() {
+    std::string res;
+    for (size_t i = this->file_.size() - 1; i >= 0; i--) {
+        if (this->file_[i] == '\\' || this->file_[i] == '/')
+            break;
+    }
+    std::reverse(res.begin(), res.end());
+    return res;
+}

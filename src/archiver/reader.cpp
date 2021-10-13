@@ -21,12 +21,12 @@ bool reader::read_from_buffer_(bool &out) {
 
 // Чтение массива бит
 bool reader::read(size_t amount, std::vector<bool> &out) {
-    out.clear();
-    for (; amount; amount--) {
+    out.resize(amount);
+    for (size_t i = 0; i < amount; i++) {
         bool bit;
         if (!this->read_from_buffer_(bit))
             return false;
-        out.push_back(bit);
+        out[i] = bit;
     }
     return true;
 }
@@ -34,12 +34,11 @@ bool reader::read(size_t amount, std::vector<bool> &out) {
 // Чтение массива бит в виде числа
 bool reader::read(size_t amount, unsigned long long &out) {
     out = 0;
-
-    for (; amount; amount--) {
+    for (char shift = 0; amount; amount--, shift++) {
         bool bit;
         if (!this->read_from_buffer_(bit))
             return false;
-        out += bit << (amount - 1);
+        out |= bit << shift;
     }
     return true;
 }
@@ -49,5 +48,33 @@ bool reader::read(bool &out) {
     if (!this->read_from_buffer_(out))
         return false;
     return true;
+}
+
+// Конструктор от файла
+reader::reader(const std::string &file) {
+    this->stream_.open(this->file_ = file, std::ifstream::binary);
+}
+
+// Повторное открытие файла
+void reader::reopen() {
+    this->stream_.close();
+    this->stream_.open(this->file_, std::ifstream::binary);
+}
+
+// Путь к файлу
+std::string reader::get_path() {
+    return this->file_;
+}
+
+// Имя файла
+std::string reader::get_name() {
+    std::string res;
+    for (size_t i = this->file_.size() - 1; i >= 0; i--) {
+        if (this->file_[i] == '\\' || this->file_[i] == '/')
+            break;
+        res.push_back(this->file_[i]);
+    }
+    std::reverse(res.begin(), res.end());
+    return res;
 }
 

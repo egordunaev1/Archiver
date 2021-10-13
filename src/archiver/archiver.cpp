@@ -1,24 +1,28 @@
 #include "archiver.h"
 
+/*
+ * - Разбить функции
+ * - Добавить вывод времени
+ * - Добавить работу с консольными параметрами
+ * - Продолжить рефакторинг
+ */
+
 void archiver::zip(std::vector<std::string> file_paths, const std::string& archive_name) {
-    std::ofstream out(archive_name, std::ofstream::binary);
-    writer _writer(out);
+    writer _writer(archive_name);
     for (int i = 0; i < file_paths.size(); i++) {
+        reader _reader(file_paths[i]);
         int eof = i == file_paths.size() - 1 ? ARCHIVE_END : ONE_MORE_FILE;
-        zip_file_(file_paths[i], _writer, eof);
+        zip_file_(_reader, _writer, eof);
     }
 }
 
-void archiver::zip_file_(std::string &file_name, writer& _writer, int eof) {
-    std::ifstream in(file_name, std::ifstream::binary);
-    reader _reader(in);
-
+void archiver::zip_file_(reader& _reader, writer& _writer, int eof) {
     // Подсчет количества вхождений
     std::unordered_map<int, ull> freq;
     freq[FILENAME_END]++;
     freq[ONE_MORE_FILE]++;
     freq[ARCHIVE_END]++;
-    for (unsigned char c : file_name)
+    for (unsigned char c : _reader.get_name())
         freq[c]++;
     for (ull c; _reader.read(8, c);)
         freq[c]++;
@@ -45,12 +49,11 @@ void archiver::zip_file_(std::string &file_name, writer& _writer, int eof) {
         _writer.write(static_cast<ull>(cnt), 9);
 
     // Кодируем имя файла
-    for (unsigned char chr : file_name)
+    for (unsigned char chr : _reader.get_name())
         _writer.write(huffmanTrie.get(chr));
     _writer.write(huffmanTrie.get(FILENAME_END));
 
-    in.close();
-    in.open(file_name, std::ifstream::binary);
+    _reader.reopen();
     for (ull chr; _reader.read(8, chr);)
         _writer.write(huffmanTrie.get(chr));
 
@@ -84,8 +87,7 @@ std::shared_ptr<archiver::node> archiver::build_trie(std::unordered_map<int, byt
 }
 
 void archiver::unzip(const std::string& archive) {
-    std::ifstream in(archive, std::ifstream::binary);
-    reader _reader(in);
+    reader _reader(archive);
     while (unzip_file_(_reader));
 }
 
@@ -113,8 +115,7 @@ bool archiver::unzip_file_(reader &_reader) {
     std::unordered_map<int, bytecode> codes = huffman_trie::make_canonical(lens);
     std::shared_ptr<archiver::node> root = archiver::build_trie(codes);
 
-    std::ofstream out(archiver::read_filename(root, _reader)+".xxy", std::ofstream::binary);
-    writer _writer(out);
+    writer _writer(archiver::read_filename(root, _reader));
 
     return archiver::unzip_body(root, _reader, _writer);
 }
