@@ -42,6 +42,6 @@ private:
     static bool unzip_file_(reader& _reader);
 
 public:
-    static void zip(std::vector<std::string> file_paths, const std::string& archive_name);
+    static void zip(const std::vector<std::string>& file_paths, const std::string& archive_name);
     static void unzip(const std::string& archive);
 };

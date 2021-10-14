@@ -12,7 +12,7 @@ private:
 
     bool read_from_buffer_(bool& out);
 public:
-    explicit reader(const std::string& file);
+    explicit reader(std::string file);
 
     void reopen();
 

@@ -4,7 +4,7 @@
 //  Архивация
 // ============
 // Сжатие файлов в архив
-void archiver::zip(std::vector<std::string> file_paths, const std::string& archive_name) {
+void archiver::zip(const std::vector<std::string>& file_paths, const std::string& archive_name) {
     writer _writer(archive_name);
     for (int i = 0; i < file_paths.size(); i++) {
         reader _reader(file_paths[i]);

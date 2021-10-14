@@ -1,5 +1,7 @@
 #include "reader.h"
 
+#include <utility>
+
 // Наполнение буффера
 bool reader::read_from_buffer_(bool &out) {
     if (this->buffer_.empty()) {
@@ -51,8 +53,8 @@ bool reader::read(bool &out) {
 }
 
 // Конструктор от файла
-reader::reader(const std::string &file) {
-    this->stream_.open(this->file_ = file, std::ifstream::binary);
+reader::reader(std::string file) {
+    this->stream_.open(this->file_ = std::move(file), std::ifstream::binary);
 }
 
 // Повторное открытие файла

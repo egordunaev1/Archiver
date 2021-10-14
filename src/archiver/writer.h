@@ -14,7 +14,7 @@ private:
 
     void write_in_buffer_(bool val);
 public:
-    explicit writer(const std::string& file);
+    explicit writer(std::string file);
     ~writer();
 
     std::string get_path();

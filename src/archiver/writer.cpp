@@ -40,8 +40,8 @@ writer::~writer() {
 }
 
 // Конструктор от файла
-writer::writer(const std::string &file) {
-    this->stream_.open(this->file_ = file, std::ofstream::binary);
+writer::writer(std::string file) {
+    this->stream_.open(this->file_ = std::move(file), std::ofstream::binary);
 }
 
 // Путь к файлу
