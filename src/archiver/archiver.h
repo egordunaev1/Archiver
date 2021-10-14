@@ -35,7 +35,7 @@ private:
 
     // Разархивация
     static std::vector<ull> read_abc_(reader& _reader);
-    static std::shared_ptr<node> build_trie_(std::unordered_map<int, bitcode> codes);
+    static std::shared_ptr<node> build_trie_(const std::unordered_map<int, bitcode>& codes);
     static std::vector<std::pair<int, int>> read_lens_(reader& _reader, const std::vector<ull>& abc);
     static int read_code_(std::shared_ptr<archiver::node> root, reader& _reader);
     static bool unzip_body_(const std::shared_ptr<archiver::node>& root, reader& _reader, writer& _writer);

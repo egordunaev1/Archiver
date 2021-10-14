@@ -115,28 +115,18 @@ std::vector<std::pair<int, int>> archiver::read_lens_(reader &_reader, const std
 }
 
 // Построение бора для расшифровки
-archiver::nodeptr archiver::build_trie_(std::unordered_map<int, bitcode> codes) {
+archiver::nodeptr archiver::build_trie_(const std::unordered_map<int, bitcode>& codes) {
     archiver::nodeptr root = std::make_shared<archiver::node>(node());
-    for (auto &i : codes) {
-        bitcode& path = i.second;
-        std::reverse(path.begin(), path.end());
+    for (auto &code : codes) {
         archiver::nodeptr cur = root;
 
-        while (!path.empty()) {
-            bool go = path.back();
-            path.pop_back();
-            if (!go) {
-                if (!cur->l)
-                    cur->l = std::make_shared<archiver::node>(node());
-                cur = cur->l;
-            }
-            else{
-                if (!cur->r)
-                    cur->r = std::make_shared<archiver::node>(node());
-                cur = cur->r;
-            }
+        for (bool go : code.second) {
+            if (!go)
+                cur = cur->l ? cur->l : (cur->l = std::make_shared<archiver::node>(node()));
+            else
+                cur = cur->r ? cur->r : (cur->r = std::make_shared<archiver::node>(node()));
         }
-        cur->val = i.first;
+        cur->val = code.first;
     }
     return root;
 }
@@ -146,10 +136,11 @@ std::vector<ull> archiver::read_abc_(reader &_reader) {
     ull abc_size;
     _reader.read(9, abc_size);
     std::vector<ull>abc(abc_size);
-    for (int i = 0; i < abc_size; i++)
+    for (int i = 0; i < abc_size; i++) {
         if (!_reader.read(9, abc[i]))
             throw std::runtime_error("The file is corrupted");
-        return abc;
+    }
+    return abc;
 }
 
 // Чтение имени файла
