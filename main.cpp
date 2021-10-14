@@ -3,10 +3,10 @@
 
 #include "src/archiver/archiver.h"
 
-int main()
+int main(int argc, char *argv[])
 {
     int cur = clock();
-    std::vector<std::string> paths = { "something"  };
+    std::vector<std::string> paths = { "folder/mmlbook.pdf"  };
     archiver::zip(paths, "myarch.xuy");
     archiver::unzip("myarch.xuy");
     std::cout << "Time: " << (clock() - cur) / 1000 << "s";

@@ -16,23 +16,8 @@ nodeptr operator+(const nodeptr& _left, const nodeptr& _right) {
     );
 }
 
-// Конструктор листа
-huffman_trie::node::node(std::pair<const int, ull>& value) {
-    this->frequency = value.second;
-    this->val = value.first;
-    this->is_leaf = true;
-}
-
-// Конструктор вершины
-huffman_trie::node::node(ull freq, std::shared_ptr <node> lc, std::shared_ptr <node> rc) {
-    this->frequency = freq;
-    this->left_child = std::move(lc);
-    this->right_child = std::move(rc);
-    this->val = 0;
-}
-
 // Построение дерева (возвращает указатель на корень)
-nodeptr huffman_trie::build_tree(std::unordered_map<int, ull>& frequency) {
+nodeptr huffman_trie::build_tree(const std::unordered_map<int, ull>& frequency) {
     PriorityQueue<nodeptr> priorityQueue;
     for (auto& symbol : frequency)
         priorityQueue.push(std::make_shared<huffman_trie::node>(symbol));
@@ -44,7 +29,7 @@ nodeptr huffman_trie::build_tree(std::unordered_map<int, ull>& frequency) {
 
 // Заполняет вектор парами символ - длина его кода
 void huffman_trie::get_lens(const nodeptr &cur, std::vector<std::pair<int, int>>& out, short cur_len) {
-    if (cur->is_leaf)
+    if (cur->is_leaf())
         return void(out.emplace_back(cur_len, cur->val));
     cur_len++;
     if (cur->left_child)
@@ -85,7 +70,7 @@ std::unordered_map<int, bitcode> huffman_trie::make_canonical(std::vector<std::p
 }
 
 // Единственный конструктор
-huffman_trie::huffman_trie(std::unordered_map<int, ull>& frequency) {
+huffman_trie::huffman_trie(const std::unordered_map<int, ull>& frequency) {
     // Исключение: нет символов
     if (frequency.empty())
         throw std::invalid_argument("alphabet size is null");
@@ -105,7 +90,7 @@ huffman_trie::huffman_trie(std::unordered_map<int, ull>& frequency) {
     for (auto &i : table_)
         this->order_.emplace_back(i.second.size(), i.first);
     std::sort(this->order_.begin(), this->order_.end());
-};
+}
 
 // Получение кода по символу
 bitcode huffman_trie::get(int chr) {
@@ -114,4 +99,8 @@ bitcode huffman_trie::get(int chr) {
 
 const std::vector<std::pair<int, int>>& huffman_trie::get_order() {
     return this->order_;
+}
+
+bool huffman_trie::node::is_leaf() const {
+    return !this->left_child && !this->right_child;
 }
