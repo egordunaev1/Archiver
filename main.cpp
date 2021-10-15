@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
                            "||                           ARCHIVER                         ||\n"
                            "================================================================\n"
                            "|--------------------------------------------------------------| \n"
-                           "| -h                                     ==> HELP             |\n"
+                           "| -h                                     ==> HELP              |\n"
                            "| zip <archive_name> <file1> <file2> ... ==> ZIP FILES         |\n"
                            "| unzip <archive_name>                   ==> UNZIP AN ARCHIVE  |\n"
                            "|--------------------------------------------------------------|";
@@ -46,8 +46,10 @@ int main(int argc, char *argv[])
             std::cout << "Usage: unzip <archive_name>";
         else {
             std::string archive_name(argv[2]);
-            if (!check_file(argv[2]))
+            if (!check_file(argv[2])) {
                 std::cout << argv[2] << " does not exist or can't be opened";
+                return 0;
+            }
             std::cout << "Unzipping started\n";
             archiver::unzip(archive_name);
             std::cout << "Unzipping done!";
