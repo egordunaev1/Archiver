@@ -15,11 +15,11 @@ int main(int argc, char *argv[])
         std::string help = "================================================================\n"
                            "||                           ARCHIVER                         ||\n"
                            "================================================================\n"
-                           "|--------------------------------------------------------------- \n"
-                           "| -h                                      ==> HELP             |\n"
-                           "| zip <archive_name> <file1> <file2> ... ==> ZIP FILES        |\n"
-                           "| unzip <archive_name>                   ==> UNZIP AN ARCHIVE |\n"
-                           "----------------------------------------------------------------";
+                           "|--------------------------------------------------------------| \n"
+                           "| -h                                     ==> HELP             |\n"
+                           "| zip <archive_name> <file1> <file2> ... ==> ZIP FILES         |\n"
+                           "| unzip <archive_name>                   ==> UNZIP AN ARCHIVE  |\n"
+                           "|--------------------------------------------------------------|";
         std::cout << help;
     } else if (std::string(argv[1]) == "zip") {
         if (argc <= 3)
@@ -52,6 +52,9 @@ int main(int argc, char *argv[])
             archiver::unzip(archive_name);
             std::cout << "Unzipping done!";
         }
+    }
+    else {
+        std::cout << "Incorrect usage, type -help.";
     }
     return 0;
 }
